@@ -55,3 +55,7 @@ watch-task:
 .PHONY: cancel-task
 cancel-task:
 	go run ./cmd/taskforge cancel $(ARGS)
+
+.PHONY: tui
+tui:
+	go run ./cmd/taskforge tui $(ARGS)

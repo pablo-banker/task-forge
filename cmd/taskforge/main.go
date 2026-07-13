@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/pablo-banker/taskforge/internal/cliui"
+	"github.com/pablo-banker/taskforge/internal/tui"
 	pb "github.com/pablo-banker/taskforge/proto/taskforge/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -38,6 +39,9 @@ func main() {
 	case "watch":
 		watchCommand(os.Args[2:])
 
+	case "tui":
+		tuiCommand(os.Args[2:])
+
 	default:
 		usage()
 		os.Exit(1)
@@ -57,7 +61,20 @@ Usage:
   taskforge list --status completed
   taskforge cancel --id <task-id>
   taskforge watch --id <task-id>
+  taskforge tui
 `)
+}
+
+func tuiCommand(args []string) {
+	fs := flag.NewFlagSet("tui", flag.ExitOnError)
+
+	addr := fs.String("addr", "localhost:50051", "server address")
+
+	_ = fs.Parse(args)
+
+	if err := tui.Run(*addr); err != nil {
+		log.Fatalf("tui failed: %v", err)
+	}
 }
 
 func createCommand(args []string) {
