@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package taskforge.v1;
+
+option go_package = "github.com/pablo-banker/taskforge/proto/taskforge/v1;taskforgev1";
+
+service TaskService {
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse);
+  rpc CancelTask(CancelTaskRequest) returns (CancelTaskResponse);
+  rpc WatchTask(WatchTaskRequest) returns (stream WatchTaskResponse);
+}
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_PENDING = 1;
+  TASK_STATUS_SCHEDULED = 2;
+  TASK_STATUS_QUEUED = 3;
+  TASK_STATUS_RUNNING = 4;
+  TASK_STATUS_COMPLETED = 5;
+  TASK_STATUS_FAILED = 6;
+  TASK_STATUS_CANCELLED = 7;
+  TASK_STATUS_DEAD_LETTER = 8;
+}
+
+enum TaskPriority {
+  TASK_PRIORITY_UNSPECIFIED = 0;
+  TASK_PRIORITY_LOW = 1;
+  TASK_PRIORITY_NORMAL = 2;
+  TASK_PRIORITY_HIGH = 3;
+}
+
+message Task {
+  string id = 1;
+  string queue = 2;
+  string name = 3;
+  string payload = 4;
+  TaskStatus status = 5;
+  TaskPriority priority = 6;
+  int32 attempts = 7;
+  int32 max_attempts = 8;
+  int64 run_at_unix = 9;
+  int64 created_at_unix = 10;
+  int64 updated_at_unix = 11;
+  string last_error = 12;
+}
+
+message CreateTaskRequest {
+  string queue = 1;
+  string name = 2;
+  string payload = 3;
+  TaskPriority priority = 4;
+  int32 max_attempts = 5;
+  int64 run_at_unix = 6;
+}
+
+message CreateTaskResponse {
+  Task task = 1;
+}
+
+message GetTaskRequest {
+  string id = 1;
+}
+
+message GetTaskResponse {
+  Task task = 1;
+}
+
+message ListTasksRequest {
+  string queue = 1;
+  TaskStatus status = 2;
+}
+
+message ListTasksResponse {
+  repeated Task tasks = 1;
+}
+
+message CancelTaskRequest {
+  string id = 1;
+}
+
+message CancelTaskResponse {
+  Task task = 1;
+}
+
+message WatchTaskRequest {
+  string id = 1;
+}
+
+message WatchTaskResponse {
+  Task task = 1;
+}
